@@ -40,6 +40,26 @@
         }
     }
 
+    const MAX_COUNT = 5
+    let count = MAX_COUNT
+    const countdown = () => {
+        setTimeout(() => {
+            count--
+            console.log(count)
+            if(count > 0) {
+                countdown()
+            } else {
+                saveCapture()
+                resetCount()
+            }
+        }, 1000)
+    }
+
+    const resetCount = () => {
+        count = MAX_COUNT
+    }
+
+
     const saveCapture = () => {
         if(!videoRef || !canvasForSave) return
         canvasForSave.width = videoSize.width
@@ -58,14 +78,14 @@
             <Button on:click={stopCapture} variant='raised'>
                 キャプチャーを終了
             </Button>
+            <Button on:click={countdown} variant='raised'>
+                キャプチャーを保存
+            </Button>
         {:else}
             <Button on:click={startCapture} variant='raised'>
                 画面キャプチャーを開始する
             </Button>
         {/if}
-        <Button on:click={saveCapture} variant='raised'>
-            キャプチャーを保存
-        </Button>
     </div>
     <div class='capture-wrapper'>
         {#if isCapturing}
