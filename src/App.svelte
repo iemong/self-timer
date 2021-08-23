@@ -4,8 +4,8 @@
 
     let videoRef:(HTMLVideoElement | null)
     let canvasForSave:(HTMLCanvasElement | null)
-    let videoSize: { width: number, height: number} = { width: 0, height: 0}
     let isCapturing = false
+    let currentVideoTrack:(MediaStreamTrack | null) = null
 
     const displayMediaOptions:MediaStreamConstraints = {
         video: true,
@@ -23,9 +23,7 @@
             currentTrack.onended = () => {
                 stopCapture()
             };
-            const { width, height} = currentTrack.getSettings()
-            videoSize.width = width
-            videoSize.height = height
+            currentVideoTrack = currentTrack
         } catch(e) {
             console.error(e)
         }
@@ -60,15 +58,22 @@
     }
 
 
-    const saveCapture = () => {
-        if(!videoRef || !canvasForSave) return
-        canvasForSave.width = videoSize.width
-        canvasForSave.height = videoSize.height
-        const ctx = canvasForSave.getContext('2d')
-        ctx.clearRect(0, 0, videoSize.width, videoSize.height)
-        ctx.drawImage(videoRef, 0, 0)
-        const data = canvasForSave.toDataURL("image/jpeg", 1)
-        download(data, "output.jpg", "image/jpeg")
+    const saveCapture = async () => {
+        try {
+            if(!canvasForSave) return
+            const imageCapture = new ImageCapture(currentVideoTrack);
+            await imageCapture.getPhotoCapabilities()
+            const { width, height} = currentVideoTrack.getSettings()
+            const bitmap = await imageCapture.grabFrame()
+            canvasForSave.width = bitmap.width;
+            canvasForSave.height = bitmap.height;
+            const context = canvasForSave.getContext('2d')
+            context.drawImage(bitmap, 0, 0);
+            download(canvasForSave.toDataURL("image/jpeg", 1), "output.jpg", "image/jpeg")
+            context.clearRect(0, 0, bitmap.width, bitmap.height);
+        } catch (e) {
+            console.error(e)
+        }
     }
 </script>
 
