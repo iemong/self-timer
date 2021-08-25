@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { fly } from 'svelte/transition'
     import Button from '@smui/button'
     import download from 'downloadjs'
 
@@ -39,15 +40,21 @@
 
     const MAX_COUNT = 3
     let count = MAX_COUNT
+    let isCounting = false
+    const handleClickCapture = () => {
+        if(isCounting) return
+        resetCount()
+        countdown()
+        isCounting = true
+    }
     const countdown = () => {
         setTimeout(() => {
+            count--
             if(count > 0) {
-                console.log(count)
-                count--
                 countdown()
             } else {
                 saveCapture()
-                resetCount()
+                isCounting = false
             }
         }, 1000)
     }
@@ -82,7 +89,7 @@
             <Button on:click={stopCapture} variant='raised'>
                 キャプチャーを終了
             </Button>
-            <Button on:click={countdown} variant='raised'>
+            <Button on:click={handleClickCapture} variant='raised'>
                 キャプチャーを保存
             </Button>
         {:else}
@@ -93,11 +100,20 @@
     </div>
     <div class='capture-wrapper'>
         {#if isCapturing}
-            <strong class='mdc-typography--body1 attention'>この画面が保存されます。</strong>
+            <div class='mdc-typography--body1'>
+                <strong class='attention'>この画面が保存されます。</strong>
+            </div>
         {/if}
-        <video bind:this={videoRef} autoplay class='capture'>
-            <track kind="captions" src=''>
-        </video>
+        <div class='video-wrapper'>
+            <video bind:this={videoRef} autoplay class='capture'>
+                <track kind="captions" src=''>
+            </video>
+            {#if isCapturing && isCounting}
+                {#key count}
+                    <strong in:fly={{ y: -20 }} class='counter'>{count}</strong>
+                {/key}
+            {/if}
+        </div>
         <canvas bind:this={canvasForSave} class='hide'></canvas>
     </div>
 </main>
@@ -114,6 +130,32 @@
     }
     .attention {
         display: block;
+        font-weight: bold;
+        margin-bottom: 16px;
+    }
+    .video-wrapper {
+        position: relative;
+    }
+    .counter {
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        min-width: 1em;
+        height: 1em;
+        text-align: center;
+        margin: auto;
+        color: white;
+        --length: 1px;
+        text-shadow:
+                var(--length) 0 0 black,
+                0 var(--length) 0 black,
+                calc(var(--length) * -1) 0 0 black,
+                0 calc(var(--length) * -1) 0 black;
+        font-size: 128px;
+        font-weight: bold;
     }
     .hide {
         display: none;
