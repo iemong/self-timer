@@ -30,12 +30,11 @@
     }
 
     const stopCapture = () => {
-        if ('getTracks' in videoRef.srcObject) {
-            const tracks = videoRef.srcObject.getTracks()
-            tracks.forEach( track => track.stop())
-            videoRef.srcObject = null
-            isCapturing = false
-        }
+        if (!('getTracks' in videoRef.srcObject)) return
+        const tracks = videoRef.srcObject.getTracks()
+        tracks.forEach(track => track.stop())
+        videoRef.srcObject = null
+        isCapturing = false
     }
 
     const MAX_COUNT = 5
