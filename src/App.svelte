@@ -37,13 +37,13 @@
         isCapturing = false
     }
 
-    const MAX_COUNT = 5
+    const MAX_COUNT = 3
     let count = MAX_COUNT
     const countdown = () => {
         setTimeout(() => {
-            count--
-            console.log(count)
             if(count > 0) {
+                console.log(count)
+                count--
                 countdown()
             } else {
                 saveCapture()
@@ -93,7 +93,7 @@
     </div>
     <div class='capture-wrapper'>
         {#if isCapturing}
-            <p class='attention'>この画面が保存されます。</p>
+            <strong class='mdc-typography--body1 attention'>この画面が保存されます。</strong>
         {/if}
         <video bind:this={videoRef} autoplay class='capture'>
             <track kind="captions" src=''>
@@ -113,8 +113,7 @@
         max-height: 80vh;
     }
     .attention {
-        font-weight: bold;
-        margin-bottom: 16px;
+        display: block;
     }
     .hide {
         display: none;

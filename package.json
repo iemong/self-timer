@@ -27,6 +27,7 @@
     "vite": "^2.4.4"
   },
   "dependencies": {
+    "@material/typography": "^12.0.0",
     "@smui/button": "^4.2.0",
     "image-capture": "^0.4.0"
   }
