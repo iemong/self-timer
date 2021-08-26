@@ -83,29 +83,30 @@
     }
 </script>
 
-<main>
-    <div class='button-wrapper'>
-        {#if isCapturing}
-            <Button on:click={stopCapture} variant='raised'>
-                キャプチャーを終了
-            </Button>
-            <Button on:click={handleClickCapture} variant='raised'>
-                キャプチャーを保存
-            </Button>
-        {:else}
+<main class='main'>
+    {#if !isCapturing}
+        <div class='prepare-button-wrapper'>
             <Button on:click={startCapture} variant='raised'>
-                画面キャプチャーを開始する
+                保存したい画面を選択する
             </Button>
-        {/if}
-    </div>
+        </div>
+    {/if}
     <div class='capture-wrapper'>
         {#if isCapturing}
+            <div class='ready-button-wrapper'>
+                <Button class='save-button' on:click={handleClickCapture} variant='raised'>
+                    キャプチャーを保存する
+                </Button>
+                <Button class='end-button' on:click={stopCapture} variant='outlined'>
+                    やり直す
+                </Button>
+            </div>
             <div class='mdc-typography--body1'>
-                <strong class='attention'>この画面が保存されます。</strong>
+                <strong class='attention'>↓↓↓この画面が保存されます。↓↓↓</strong>
             </div>
         {/if}
         <div class='video-wrapper'>
-            <video bind:this={videoRef} autoplay class='capture'>
+            <video bind:this={videoRef} autoplay class='capture' data-is-capturing={isCapturing}>
                 <track kind="captions" src=''>
             </video>
             {#if isCapturing && isCounting}
@@ -118,7 +119,17 @@
     </div>
 </main>
 
-<style>
+<style lang='scss'>
+    .main {
+        height: 100%;
+    }
+    .prepare-button-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
     .capture-wrapper {
         display: flex;
         flex-direction: column;
@@ -135,6 +146,19 @@
     }
     .video-wrapper {
         position: relative;
+    }
+    .capture {
+        display: block;
+        margin: 0 auto;
+        &[data-is-capturing="false"] {
+             height: 0;
+         }
+    }
+    .ready-button-wrapper {
+        display: flex;
+        justify-content: space-between;
+        gap: 0 16px;
+        margin: 32px 0 48px;
     }
     .counter {
         position: absolute;
